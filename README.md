@@ -371,11 +371,11 @@
                             autocomplete="off">
                     </div>
                     <div class="col-auto">
-	      <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
+					<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
                     </div>
-	      <div class="col-auto">
-    	      <button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
-	      </div>
+					<button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
+	      			<div class="col-auto">
+	      			</div>
                     <div class="col-auto">
                         <input type="number" id="upperAmount" class="form-control" placeholder="บน">
                     </div>
