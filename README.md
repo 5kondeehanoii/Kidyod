@@ -358,10 +358,11 @@
                         <option value="33">ลด 33%</option>
                     </select>
                 </div>
-				</div>
-					<div class="d-flex justify-content-start gap-2 mt-3">
+				
+                <div class="d-flex justify-content-start gap-2 mt-3">
                     <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
-                	</div>
+                </div>
+
                 <div class="row g-2 align-items-center mb-3 input-amounts-group">
                     <div class="col-auto">
                         <input type="text" id="billTime" class="form-control" placeholder="เช่น 15:30">
@@ -373,10 +374,9 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
-					</div>
-                    <div class="col-auto">
-					<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
-                    </div>
+ 	     			<div class="col-auto">
+                   <button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
+	    			 </div>
                     <div class="col-auto">
                         <input type="number" id="upperAmount" class="form-control" placeholder="บน">
                     </div>
@@ -386,7 +386,6 @@
                     <div class="col-auto">
                         <input type="number" id="todsAmount" class="form-control" placeholder="โต๊ด">
                     </div>
-
                     <div class="col-auto">
                         <button class="btn btn-teal" onclick="addNumber()">+ เพิ่มบิล</button>
                     </div>
