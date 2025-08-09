@@ -1,4 +1,4 @@
-ระบบคิดยอด ตัวแทน
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -358,7 +358,7 @@
                         <option value="33">ลด 33%</option>
                     </select>
                 </div>
-				
+
                 <div class="d-flex justify-content-start gap-2 mt-3">
                     <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
                 </div>
@@ -374,9 +374,9 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
- 	     			<div class="col-auto">
-                   <button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
-	    			 </div>
+					<div class="col-auto">
+	 				<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
+	 				</div>
                     <div class="col-auto">
                         <input type="number" id="upperAmount" class="form-control" placeholder="บน">
                     </div>
@@ -386,6 +386,7 @@
                     <div class="col-auto">
                         <input type="number" id="todsAmount" class="form-control" placeholder="โต๊ด">
                     </div>
+
                     <div class="col-auto">
                         <button class="btn btn-teal" onclick="addNumber()">+ เพิ่มบิล</button>
                     </div>
