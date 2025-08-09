@@ -358,7 +358,9 @@
                         <option value="33">ลด 33%</option>
                     </select>
                 </div>
-
+					<div class="d-flex justify-content-start gap-2 mt-3">
+                    <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
+                	</div>
                 <div class="row g-2 align-items-center mb-3 input-amounts-group">
                     <div class="col-auto">
                         <input type="text" id="billTime" class="form-control" placeholder="เช่น 15:30">
@@ -370,10 +372,6 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
-					<div class="d-flex justify-content-start gap-2 mt-3">
-                    <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
-                	</div>
-
                     <div class="col-auto">
 					<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
                     </div>
