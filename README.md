@@ -358,6 +358,7 @@
                         <option value="33">ลด 33%</option>
                     </select>
                 </div>
+				</div>
 					<div class="d-flex justify-content-start gap-2 mt-3">
                     <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
                 	</div>
@@ -372,6 +373,7 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
+					</div>
                     <div class="col-auto">
 					<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
                     </div>
