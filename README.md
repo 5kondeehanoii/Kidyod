@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ระบบคิดยอด ตัวแทน
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -359,11 +359,6 @@
                     </select>
                 </div>
 
-                <div class="d-flex justify-content-start gap-2 mt-3">
-                    <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
-                    <button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
-                </div>
-
                 <div class="row g-2 align-items-center mb-3 input-amounts-group">
                     <div class="col-auto">
                         <input type="text" id="billTime" class="form-control" placeholder="เช่น 15:30">
@@ -375,6 +370,12 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
+                    <div class="col-auto">
+	      <button class="btn btn-yellow" onclick="generate6Reverse()">6 กลับ</button>
+                    </div>
+	      <div class="col-auto">
+    	      <button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
+	      </div>
                     <div class="col-auto">
                         <input type="number" id="upperAmount" class="form-control" placeholder="บน">
                     </div>
@@ -865,6 +866,7 @@
         }
 
         function updateNormalDiscountDisplay() {}
+
         function generate6Reverse() {
             const inputNum = inputNumberInput.value.trim();
             if (inputNum.length !== 2 && inputNum.length !== 3) {
@@ -875,26 +877,26 @@
             const generatedNumbers = new Set();
             numbers.forEach(num => {
                 if (num.length === 3) {
-                    const digits = num.split('').map(Number);
-                    const uniqueDigits = new Set(digits);
-                    if (uniqueDigits.size < 3) {
-                        alert("เลข 3 ตัวที่มีเลขซ้ำไม่สามารถใช้ 6 กลับได้");
-                        return;
-                    }
+                    const digits = num.split('');
+                    
+                    // Generate all 6 permutations for a 3-digit number
                     const permutations = [
-                        [digits[0], digits[1], digits[2]],
-                        [digits[0], digits[2], digits[1]],
-                        [digits[1], digits[0], digits[2]],
-                        [digits[1], digits[2], digits[0]],
-                        [digits[2], digits[0], digits[1]],
-                        [digits[2], digits[1], digits[0]]
+                        digits[0] + digits[1] + digits[2],
+                        digits[0] + digits[2] + digits[1],
+                        digits[1] + digits[0] + digits[2],
+                        digits[1] + digits[2] + digits[0],
+                        digits[2] + digits[0] + digits[1],
+                        digits[2] + digits[1] + digits[0]
                     ];
-                    permutations.forEach(p => generatedNumbers.add(p.join('')));
+
+                    // Use a Set to automatically handle and remove duplicate permutations
+                    permutations.forEach(p => generatedNumbers.add(p));
                 }
             });
             inputNumberInput.value = [...generatedNumbers].join(' ');
             displayInputNumbers();
         }
+        
         function reverseInputNumbers() {
             const input = inputNumberInput.value.trim();
             if (!input) return;
