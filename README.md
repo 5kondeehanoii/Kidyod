@@ -1,4 +1,4 @@
-ระบบคิดยอดตัวแทนหวย
+ระบบคิดยอดตัวแทน
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -260,9 +260,11 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 1.2em;
+            max-width: 500px;
+            margin: 0 auto;
         }
         .specific-summary-table td {
-            padding: 8px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #eee;
         }
         .specific-summary-table td:first-child {
@@ -285,21 +287,67 @@
             border-top: 2px solid #000;
         }
         .summary-status-row td {
-            padding-top: 15px;
+            padding-top: 20px;
         }
         .summary-status-row .status-text {
-            color: green;
             font-weight: bold;
         }
         .summary-status-row .status-text.negative {
             color: #dc3545;
         }
+        .summary-status-row .status-text.positive {
+            color: green;
+        }
         .summary-table-container {
             padding: 20px;
         }
-        /* เพิ่ม CSS นี้เพื่อซ่อนคอลัมน์ */
         .hide-grand-total {
             display: none !important;
+        }
+        #combinedSummaryModal .modal-dialog {
+            max-width: 90%;
+        }
+        #combinedSummaryContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        #combinedSummaryHeader {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #combinedSummaryTableContainer {
+            border-top: 2px solid #000;
+            padding-top: 20px;
+            width: 100%;
+        }
+        #combinedSummaryTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        #combinedSummaryTable th, #combinedSummaryTable td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: right;
+        }
+        #combinedSummaryTable th {
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        #combinedSummaryTable td:first-child {
+            text-align: center;
+            font-weight: bold;
+        }
+        #combinedSummaryTable tfoot tr {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+        #combinedSummaryTable td.winning-numbers-cell {
+            text-align: left;
+            white-space: normal;
+            font-size: 0.85em;
         }
     </style>
 </head>
@@ -374,9 +422,10 @@
                             onblur="handleInputNumberBlur()"
                             autocomplete="off">
                     </div>
+
 					<div class="col-auto">
-	 				<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
-	 				</div>
+						<button class="btn btn-yellow" onclick="reverseInputNumbers()">กลับเลข</button>
+               		</div>
                     <div class="col-auto">
                         <input type="number" id="upperAmount" class="form-control" placeholder="บน">
                     </div>
@@ -401,7 +450,6 @@
                     <div class="ms-auto d-flex gap-2">
                         <button class="btn btn-dark-green" onclick="saveCurrentBillSummary()">💾 บันทึกยอดรวม</button>
                         <button class="btn btn-primary" onclick="showOverallSummary()">📊 สรุปยอดทั้งหมด</button>
-                        <button class="btn btn-info" onclick="showTimeBasedSummaryModal()">📸 บันทึกตารางสรุปเป็นรูปภาพ</button>
                     </div>
                 </div>
 
@@ -450,80 +498,79 @@
         </div>
     </div>
 
-    <div class="modal fade" id="overallSummaryModal" tabindex="-1" aria-labelledby="overallSummaryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="overallSummaryModalLabel">📊 สรุปยอดทั้งหมด</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="overallSummaryHeader">
-                        <p class="mb-1"><strong>ลูกค้า:</strong> <span id="overallSummaryCustomerName"></span></p>
-                    </div>
-                    <div class="modal-body-content">
-                        <table class="specific-summary-table">
-                            <tbody>
-                                <tr>
-                                    <td>ยอดซื้อทั้งหมด</td>
-                                    <td><span id="summaryTotalPurchase"></span></td>
-                                </tr>
-                                <tr id="summaryRow15">
-                                    <td>ยอดซื้อ 15%</td>
-                                    <td><span id="summaryPurchase15"></span></td>
-                                </tr>
-                                <tr id="summaryRow28">
-                                    <td>ยอดซื้อ 28%</td>
-                                    <td><span id="summaryPurchase28"></span></td>
-                                </tr>
-                                <tr id="summaryRow33">
-                                    <td>ยอดซื้อ 33%</td>
-                                    <td><span id="summaryPurchase33"></span></td>
-                                </tr>
-                                <tr id="summaryRowOther">
-                                    <td>ยอดซื้อส่วนลดอื่น ๆ</td>
-                                    <td><span id="summaryPurchaseOther"></span></td>
-                                </tr>
-                                <tr>
-                                    <td>ยอดถูก</td>
-                                    <td><span id="summaryWinningAmount"></span></td>
-                                </tr>
-                                <tr class="total-row">
-                                    <td>สรุปยอดหักยอดถูก</td>
-                                    <td><span id="summaryNetTotal"></span></td>
-                                </tr>
-                                <tr class="summary-status-row">
-                                    <td colspan="2"><span id="summaryStatusText" class="status-text"></span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-primary" onclick="printOverallSummary()">พิมพ์</button>
-                    <button type="button" class="btn btn-info" onclick="saveOverallSummaryAsImage()">📸 บันทึกเป็นรูปภาพ</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="timeBasedSummaryModal" tabindex="-1" aria-labelledby="timeBasedSummaryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="combinedSummaryModal" tabindex="-1" aria-labelledby="combinedSummaryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="timeBasedSummaryModalLabel">📸 สรุปยอดรวมตามเวลา</h5>
+                    <h5 class="modal-title" id="combinedSummaryModalLabel">📊 สรุปยอดทั้งหมด</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="summary-table-container">
-                        <div id="timeBasedSummaryTableContainerModal">
-                            </div>
+                    <div id="combinedSummaryContent">
+                        <div id="combinedSummaryHeader">
+                            <p class="mb-1"><strong>ลูกค้า:</strong> <span id="overallSummaryCustomerName"></span></p>
+                        </div>
+                        <div class="modal-body-content">
+                            <table class="specific-summary-table">
+                                <tbody>
+                                    <tr>
+                                        <td>ยอดซื้อทั้งหมด</td>
+                                        <td><span id="summaryTotalPurchase"></span></td>
+                                    </tr>
+                                    <tr id="summaryRow15">
+                                        <td>ยอดซื้อ 15%</td>
+                                        <td><span id="summaryPurchase15"></span></td>
+                                    </tr>
+                                    <tr id="summaryRow28">
+                                        <td>ยอดซื้อ 28%</td>
+                                        <td><span id="summaryPurchase28"></span></td>
+                                    </tr>
+                                    <tr id="summaryRow33">
+                                        <td>ยอดซื้อ 33%</td>
+                                        <td><span id="summaryPurchase33"></span></td>
+                                    </tr>
+                                    <tr id="summaryRowOther">
+                                        <td>ยอดซื้อส่วนลดอื่น ๆ</td>
+                                        <td><span id="summaryPurchaseOther"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>ยอดถูก</td>
+                                        <td><span id="summaryWinningAmount"></span></td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td>สรุปยอดหักยอดถูก</td>
+                                        <td><span id="summaryNetTotal"></span></td>
+                                    </tr>
+                                    <tr class="summary-status-row">
+                                        <td colspan="2"><span id="summaryStatusText" class="status-text"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="combinedSummaryTableContainer">
+                            <h5 class="mt-4 mb-2">ตารางสรุปยอดตามเวลา</h5>
+                            <table id="combinedSummaryTable" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>เวลา</th>
+                                        <th>ยอดเฉพาะลด 15%</th>
+                                        <th>ยอดซื้อส่วนลด</th>
+                                        <th>ยอดรวมทั้งหมด</th>
+                                        <th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>
+                                        <th>ยอดถูกรางวัล</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="combinedSummaryTableBody"></tbody>
+                                <tfoot id="combinedSummaryTableFoot"></tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-info" onclick="saveTimeBasedSummaryAsImage()">💾 บันทึกรูปตารางสรุป</button>
+                    <button type="button" class="btn btn-primary" onclick="printCombinedSummary()">พิมพ์</button>
+                    <button type="button" class="btn btn-info" onclick="saveCombinedSummaryAsImage()">📸 บันทึกรูปภาพสรุป</button>
                 </div>
             </div>
         </div>
@@ -710,10 +757,7 @@
         const correctTwoDigitsLowerInput = document.getElementById('correctTwoDigitsLowerInput');
         const discountInput = document.getElementById('discountInput');
         const discountOptionSelect = document.getElementById('discountOption');
-        const overallSummaryGrid = document.getElementById('overallSummaryGrid');
-        const overallSummaryNetTotalDiv = document.getElementById('overallSummaryNetTotal');
-        const overallSummaryStatusDiv = document.getElementById('overallSummaryStatus');
-        const timeBasedSummaryTableContainerModal = document.getElementById('timeBasedSummaryTableContainerModal');
+        const combinedSummaryModal = new bootstrap.Modal(document.getElementById('combinedSummaryModal'));
 
 
         let total = 0;
@@ -840,13 +884,10 @@
             const isSingle = currentUserGroup.isSingleDiscountType;
             const theadRow = document.querySelector('#timeBasedSummaryTable thead tr');
             
-            theadRow.innerHTML = ''; // Clear existing headers
-
-            // Add common headers
+            theadRow.innerHTML = '';
             theadRow.innerHTML += '<th>เวลา</th>';
             theadRow.innerHTML += '<th class="hide-grand-total">ยอดรวมก่อนหัก %</th>';
 
-            // Add headers based on discount type
             if (isSingle) {
                 const rate = currentUserGroup.twoDigitNormalDiscount;
                 theadRow.innerHTML += `<th id="singleDiscountTableHeader">ยอดซื้อส่วนลด ${rate}%</th>`;
@@ -854,12 +895,11 @@
                 theadRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
                 theadRow.innerHTML += `<th class="th-28-percent">ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
                 theadRow.innerHTML += `<th class="th-33-percent">ยอดซื้อส่วนลด ${currentUserGroup.threeDigitNormalDiscount}%</th>`;
-            } else { // Normal discount group
+            } else {
                 theadRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
                 theadRow.innerHTML += `<th>ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
             }
             
-            // Add common headers
             theadRow.innerHTML += '<th>ยอดรวมทั้งหมด</th>';
             theadRow.innerHTML += '<th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>';
             theadRow.innerHTML += '<th>ยอดถูกรางวัล</th>';
@@ -880,7 +920,6 @@
                 if (num.length === 3) {
                     const digits = num.split('');
                     
-                    // Generate all 6 permutations for a 3-digit number
                     const permutations = [
                         digits[0] + digits[1] + digits[2],
                         digits[0] + digits[2] + digits[1],
@@ -890,7 +929,6 @@
                         digits[2] + digits[1] + digits[0]
                     ];
 
-                    // Use a Set to automatically handle and remove duplicate permutations
                     permutations.forEach(p => generatedNumbers.add(p));
                 }
             });
@@ -1085,7 +1123,6 @@
                 grandTotalBeforeDiscount += totalEntryAmount;
 
                 if (isSingle) {
-                    // All purchases fall under the single discount rate
                     normalAmountForNonJGroup += totalEntryAmount;
                 } else if (discountNumbers.includes(num)) {
                     specialTotal += totalEntryAmount;
@@ -1140,33 +1177,32 @@
                 return;
             }
             
-            // Recalculate totals from scratch to avoid any potential state issues
             let summaryGrandTotalBeforeDiscount = 0;
             let summarySpecialTotal = 0;
             let summaryNormalTwoDigitAmount = 0;
             let summaryNormalThreeDigitAmount = 0;
             let summaryNormalAmountForNonJGroup = 0;
             
-            const isGroupJ = users[currentUserName]?.group === "กลุ่ม J";
+            const userGroup = users[currentUserName]?.group || "ลูกค้าทั่วไป";
+            const groupSettings = discountGroups[userGroup] || discountGroups["ลูกค้าทั่วไป"];
+            const isGroupJ = userGroup === "กลุ่ม J";
+            const isSingleDiscountType = groupSettings.isSingleDiscountType;
 
             currentBillEntries.forEach(entry => {
                 const num = entry.number;
-                const upper = entry.upper;
-                const lower = entry.lower;
-                const tods = entry.tods;
-                const totalEntryAmount = upper + lower + tods;
+                const totalEntryAmount = entry.upper + entry.lower + entry.tods;
                 summaryGrandTotalBeforeDiscount += totalEntryAmount;
 
-                if (currentUserGroup.isSingleDiscountType) {
+                if (isSingleDiscountType) {
                     summaryNormalAmountForNonJGroup += totalEntryAmount;
                 } else if (discountNumbers.includes(num)) {
                     summarySpecialTotal += totalEntryAmount;
                 } else {
                     if (isGroupJ) {
                         if (num.length === 2) {
-                            summaryNormalTwoDigitAmount += (entry.upper + entry.lower + entry.tods);
+                            summaryNormalTwoDigitAmount += totalEntryAmount;
                         } else if (num.length === 3) {
-                            summaryNormalThreeDigitAmount += (entry.upper + entry.tods);
+                            summaryNormalThreeDigitAmount += totalEntryAmount;
                         }
                     } else {
                          summaryNormalAmountForNonJGroup += totalEntryAmount;
@@ -1183,13 +1219,13 @@
                 normalTwoDigitAmount: summaryNormalTwoDigitAmount,
                 normalThreeDigitAmount: summaryNormalThreeDigitAmount,
                 normalAmountForNonJGroup: summaryNormalAmountForNonJGroup,
-                twoDigitNormalDiscount: currentUserGroup.twoDigitNormalDiscount,
-                threeDigitNormalDiscount: currentUserGroup.threeDigitNormalDiscount,
-                specialDiscount: currentUserGroup.specialDiscount,
-                isSingleDiscountType: currentUserGroup.isSingleDiscountType,
+                twoDigitNormalDiscount: groupSettings.twoDigitNormalDiscount,
+                threeDigitNormalDiscount: groupSettings.threeDigitNormalDiscount,
+                specialDiscount: groupSettings.specialDiscount,
+                isSingleDiscountType: isSingleDiscountType,
                 winningAmount: summaryTotalWinning,
                 winningDetails: currentWinningDetails,
-                userGroup: users[currentUserName]?.group || "ลูกค้าทั่วไป"
+                userGroup: userGroup
             };
 
             timeBasedSummaries.push(newSummary);
@@ -1249,14 +1285,43 @@
                                  <td class="hide-grand-total">${summary.grandTotalBeforeDiscount.toFixed(2)}</td>`;
 
                 if (currentDiscountTypeIsSingle) {
-                    rowContent += `<td class="td-single-discount">${discountedSingleTotal.toFixed(2)}</td>`;
+                    // This is the current user's setting, so we need to check if the summary itself is of this type
+                    if (isSummarySingle) {
+                        rowContent += `<td class="td-single-discount">${discountedSingleTotal.toFixed(2)}</td>`;
+                    } else {
+                        // If current is single but summary is not, we need to show the other columns
+                        rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-rate">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                    }
                 } else if (isCurrentGroupJ) {
-                    rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
-                    rowContent += `<td class="td-normal-28">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
-                    rowContent += `<td class="td-normal-33">${discountedNormal3DigitTotal.toFixed(2)}</td>`;
+                    // This is the current user's setting, so we need to check if the summary itself is of this type
+                    if (isSummaryGroupJ) {
+                        rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-28">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-33">${discountedNormal3DigitTotal.toFixed(2)}</td>`;
+                    } else if (isSummarySingle) {
+                        // If current is J but summary is single
+                        rowContent += `<td class="td-single-discount">${discountedSingleTotal.toFixed(2)}</td>`;
+                    } else {
+                        // If current is J but summary is normal non-J
+                        rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-rate">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                    }
                 } else {
-                    rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
-                    rowContent += `<td class="td-normal-rate">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                    // Current is normal non-J
+                    if (isSummarySingle) {
+                        // If current is normal non-J but summary is single
+                        rowContent += `<td class="td-single-discount">${discountedSingleTotal.toFixed(2)}</td>`;
+                    } else if (isSummaryGroupJ) {
+                        // If current is normal non-J but summary is J
+                        rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-28">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-33">${discountedNormal3DigitTotal.toFixed(2)}</td>`;
+                    } else {
+                        // Both are normal non-J
+                        rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                        rowContent += `<td class="td-normal-rate">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                    }
                 }
                 
                 rowContent += `<td>${totalAfterDiscount.toFixed(2)}</td>
@@ -1270,11 +1335,11 @@
                 overallGrandTotalBeforeDiscount += summary.grandTotalBeforeDiscount;
                 overallTotalWinning += parseFloat(summary.winningAmount);
                 
-                if (isSummaryGroupJ) { // Corrected logic here
+                if (isSummaryGroupJ) {
                     footSpecialTotal += discountedSpecialTotal;
                     footNormal2DigitTotal += discountedNormal2DigitTotal;
                     footNormal3DigitTotal += discountedNormal3DigitTotal;
-                } else if (isSummarySingle) { // Corrected logic here
+                } else if (isSummarySingle) {
                     footSingleDiscountTotal += discountedSingleTotal;
                 } else {
                     footSpecialTotal += discountedSpecialTotal;
@@ -1431,6 +1496,8 @@
             };
             let totalGrossPurchase = 0;
             let totalWinning = 0;
+            const isCurrentGroupJ = users[currentUserName]?.group === "กลุ่ม J";
+            const currentDiscountTypeIsSingle = currentUserGroup.isSingleDiscountType;
 
             timeBasedSummaries.forEach(summary => {
                 totalGrossPurchase += summary.grandTotalBeforeDiscount;
@@ -1438,7 +1505,7 @@
 
                 if (summary.isSingleDiscountType) {
                     const rate = summary.twoDigitNormalDiscount;
-                    const discountedAmount = summary.grandTotalBeforeDiscount * (1 - rate / 100);
+                    const discountedAmount = summary.normalAmountForNonJGroup * (1 - rate / 100);
                     totalsByRate[rate.toString()] += discountedAmount;
                 } else {
                     const specialRate = summary.specialDiscount;
@@ -1514,109 +1581,184 @@
             
             document.getElementById('overallSummaryCustomerName').textContent = currentUserName;
 
-            const overallSummaryModal = new bootstrap.Modal(document.getElementById('overallSummaryModal'));
-            overallSummaryModal.show();
-        }
+            // Render the time-based summary table inside the modal
+            const tableBody = document.getElementById('combinedSummaryTableBody');
+            const tableFoot = document.getElementById('combinedSummaryTableFoot');
+            tableBody.innerHTML = '';
+            tableFoot.innerHTML = '';
 
-        function printOverallSummary() {
-             const printContent = document.getElementById('overallSummaryModal').querySelector('.modal-body-content').innerHTML;
-             const printWindow = window.open('', '', 'height=600,width=800');
-             printWindow.document.write('<html><head><title>สรุปยอดทั้งหมด</title>');
-             printWindow.document.write('<style>');
-             printWindow.document.write('body { font-family: \'Arial\', sans-serif; font-size: 14px; padding: 20px; }');
-             printWindow.document.write('.specific-summary-table { width: 100%; border-collapse: collapse; font-size: 1.2em; }');
-             printWindow.document.write('.specific-summary-table td { padding: 8px 0; border-bottom: 1px solid #eee; }');
-             printWindow.document.write('.specific-summary-table td:first-child { font-weight: bold; }');
-             printWindow.document.write('.specific-summary-table td:last-child { text-align: right; font-weight: bold; }');
-             printWindow.document.write('.specific-summary-table tr:last-child td { border-bottom: none; }');
-             printWindow.document.write('.specific-summary-table .negative-value { color: #dc3545; }');
-             printWindow.document.write('.specific-summary-table .positive-value { color: green; }');
-             printWindow.document.write('.specific-summary-table .total-row td { border-top: 2px solid #000; }');
-             printWindow.document.write('.summary-status-row td { padding-top: 15px; }');
-             printWindow.document.write('.summary-status-row .status-text { color: green; font-weight: bold; }');
-             printWindow.document.write('.summary-status-row .status-text.negative { color: #dc3545; }');
-             printWindow.document.write('p { margin-bottom: 5px; }');
-             printWindow.document.write('</style>');
-             printWindow.document.write('</head><body>');
-             printWindow.document.write(`<h5>สรุปยอดทั้งหมด - ลูกค้า: ${currentUserName}</h5>`);
-             printWindow.document.write(printContent);
-             printWindow.document.write('</body></html>');
-             printWindow.document.close();
-             printWindow.focus();
-             printWindow.print();
-        }
-        
-        // New function to show the time-based summary modal
-        function showTimeBasedSummaryModal() {
-            const container = document.getElementById('timeBasedSummaryTableContainerModal');
-            // Clone the table from the main page to show it in the modal
-            const table = document.getElementById('timeBasedSummaryTable').cloneNode(true);
-            table.style.display = 'table'; // Make sure the table is visible
+            let footSpecialTotal = 0;
+            let footNormal2DigitTotal = 0;
+            let footNormal3DigitTotal = 0;
+            let footSingleDiscountTotal = 0;
+            let footTotalAfterDiscount = 0;
+            let footTotalWinning = 0;
             
-            // Re-render the header and footer to ensure they are correct based on current user settings
-            updateTableHeaderDiscountForModal(table);
-            
-            container.innerHTML = '';
-            container.appendChild(table);
-            
-            const timeBasedSummaryModal = new bootstrap.Modal(document.getElementById('timeBasedSummaryModal'));
-            timeBasedSummaryModal.show();
-        }
-
-        // Helper function to update table header for the modal, similar to the main one
-        function updateTableHeaderDiscountForModal(table) {
-            const isGroupJ = users[currentUserName]?.group === "กลุ่ม J";
-            const isSingle = currentUserGroup.isSingleDiscountType;
-            const theadRow = table.querySelector('thead tr');
-            
-            theadRow.innerHTML = ''; // Clear existing headers
-
-            // Add common headers
-            theadRow.innerHTML += '<th>เวลา</th>';
-
-            // Add headers based on discount type
-            if (isSingle) {
+            const tableHeaderRow = document.querySelector('#combinedSummaryTable thead tr');
+            tableHeaderRow.innerHTML = '<th>เวลา</th>';
+            if (currentDiscountTypeIsSingle) {
                 const rate = currentUserGroup.twoDigitNormalDiscount;
-                theadRow.innerHTML += `<th id="singleDiscountTableHeader">ยอดซื้อส่วนลด ${rate}%</th>`;
-            } else if (isGroupJ) {
-                theadRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
-                theadRow.innerHTML += `<th class="th-28-percent">ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
-                theadRow.innerHTML += `<th class="th-33-percent">ยอดซื้อส่วนลด ${currentUserGroup.threeDigitNormalDiscount}%</th>`;
-            } else { // Normal discount group
-                theadRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
-                theadRow.innerHTML += `<th>ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
+                tableHeaderRow.innerHTML += `<th id="combinedSingleDiscountTableHeader">ยอดซื้อส่วนลด ${rate}%</th>`;
+            } else if (isCurrentGroupJ) {
+                tableHeaderRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
+                tableHeaderRow.innerHTML += `<th class="th-28-percent">ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
+                tableHeaderRow.innerHTML += `<th class="th-33-percent">ยอดซื้อส่วนลด ${currentUserGroup.threeDigitNormalDiscount}%</th>`;
+            } else {
+                tableHeaderRow.innerHTML += `<th>ยอดเฉพาะลด ${currentUserGroup.specialDiscount}%</th>`;
+                tableHeaderRow.innerHTML += `<th>ยอดซื้อส่วนลด ${currentUserGroup.twoDigitNormalDiscount}%</th>`;
             }
-            
-            // Add common headers
-            theadRow.innerHTML += '<th>ยอดรวมทั้งหมด</th>';
-            theadRow.innerHTML += '<th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>';
-            theadRow.innerHTML += '<th>ยอดถูกรางวัล</th>';
-            
-            // Remove the 'ยอดรวมก่อนหัก %' header from the cloned table
-            const grandTotalHeader = theadRow.querySelector('.hide-grand-total');
-            if (grandTotalHeader) {
-                grandTotalHeader.remove();
-            }
+            tableHeaderRow.innerHTML += '<th>ยอดรวมทั้งหมด</th>';
+            tableHeaderRow.innerHTML += '<th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>';
+            tableHeaderRow.innerHTML += '<th>ยอดถูกรางวัล</th>';
 
-            // Remove the 'ลบ' (Delete) column as it's not needed in the summary modal
-            const deleteHeader = theadRow.querySelector('th:last-child');
-            if (deleteHeader && deleteHeader.textContent === 'ลบ') {
-                deleteHeader.remove();
+            timeBasedSummaries.forEach(summary => {
+                const row = document.createElement('tr');
+                const isSummaryGroupJ = summary.userGroup === "กลุ่ม J";
+                const isSummarySingle = summary.isSingleDiscountType;
+                let discountedSpecialTotal = 0;
+                let discountedNormal2DigitTotal = 0;
+                let discountedNormal3DigitTotal = 0;
+                let discountedSingleTotal = 0;
+                let totalAfterDiscount = 0;
+
+                if (isSummarySingle) {
+                    const discountRate = summary.twoDigitNormalDiscount / 100;
+                    discountedSingleTotal = summary.normalAmountForNonJGroup * (1 - discountRate);
+                    totalAfterDiscount = discountedSingleTotal;
+                } else {
+                    const specialRate = summary.specialDiscount / 100;
+                    discountedSpecialTotal = summary.discountTotal * (1 - specialRate);
+                    if (isSummaryGroupJ) {
+                        const normal2Rate = summary.twoDigitNormalDiscount / 100;
+                        const normal3Rate = summary.threeDigitNormalDiscount / 100;
+                        discountedNormal2DigitTotal = summary.normalTwoDigitAmount * (1 - normal2Rate);
+                        discountedNormal3DigitTotal = summary.normalThreeDigitAmount * (1 - normal3Rate);
+                        totalAfterDiscount = discountedSpecialTotal + discountedNormal2DigitTotal + discountedNormal3DigitTotal;
+                    } else {
+                        const normalRate = summary.twoDigitNormalDiscount / 100;
+                        discountedNormal2DigitTotal = summary.normalAmountForNonJGroup * (1 - normalRate);
+                        totalAfterDiscount = discountedSpecialTotal + discountedNormal2DigitTotal;
+                    }
+                }
+                
+                let rowContent = `<td>${summary.time}</td>`;
+                if (currentDiscountTypeIsSingle) {
+                    rowContent += `<td class="td-single-discount">${discountedSingleTotal.toFixed(2)}</td>`;
+                } else if (isCurrentGroupJ) {
+                    rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                    rowContent += `<td class="td-normal-28">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                    rowContent += `<td class="td-normal-33">${discountedNormal3DigitTotal.toFixed(2)}</td>`;
+                } else {
+                    rowContent += `<td class="td-special-discount">${discountedSpecialTotal.toFixed(2)}</td>`;
+                    rowContent += `<td class="td-normal-rate">${discountedNormal2DigitTotal.toFixed(2)}</td>`;
+                }
+                rowContent += `<td>${totalAfterDiscount.toFixed(2)}</td>
+                               <td class="winning-numbers-cell">${renderWinningDetails(summary.winningDetails)}</td>
+                               <td>${summary.winningAmount.toFixed(2)}</td>`;
+                
+                row.innerHTML = rowContent;
+                tableBody.appendChild(row);
+
+                if (isSummaryGroupJ) {
+                    footSpecialTotal += discountedSpecialTotal;
+                    footNormal2DigitTotal += discountedNormal2DigitTotal;
+                    footNormal3DigitTotal += discountedNormal3DigitTotal;
+                } else if (isSummarySingle) {
+                    footSingleDiscountTotal += discountedSingleTotal;
+                } else {
+                    footSpecialTotal += discountedSpecialTotal;
+                    footNormal2DigitTotal += discountedNormal2DigitTotal;
+                }
+                footTotalAfterDiscount += totalAfterDiscount;
+                footTotalWinning += parseFloat(summary.winningAmount);
+            });
+
+            const footRow = document.createElement('tr');
+            let footContent = `<td>รวม</td>`;
+            if (currentDiscountTypeIsSingle) {
+                footContent += `<td class="td-single-discount">${footSingleDiscountTotal.toFixed(2)}</td>`;
+            } else if (isCurrentGroupJ) {
+                footContent += `<td class="td-special-discount">${footSpecialTotal.toFixed(2)}</td>`;
+                footContent += `<td class="td-normal-28">${footNormal2DigitTotal.toFixed(2)}</td>`;
+                footContent += `<td class="td-normal-33">${footNormal3DigitTotal.toFixed(2)}</td>`;
+            } else {
+                footContent += `<td class="td-special-discount">${footSpecialTotal.toFixed(2)}</td>`;
+                footContent += `<td class="td-normal-rate">${footNormal2DigitTotal.toFixed(2)}</td>`;
             }
+            footContent += `<td>${footTotalAfterDiscount.toFixed(2)}</td>
+                            <td></td>
+                            <td>${footTotalWinning.toFixed(2)}</td>`;
+            
+            footRow.innerHTML = footContent;
+            tableFoot.appendChild(footRow);
+
+            combinedSummaryModal.show();
         }
-        
 
-        // New function to save the time-based summary from the modal
-        function saveTimeBasedSummaryAsImage() {
-            const modalBody = document.getElementById('timeBasedSummaryModal').querySelector('.modal-body');
-            html2canvas(modalBody).then(canvas => {
+        function printCombinedSummary() {
+            const printContent = document.getElementById('combinedSummaryContent').innerHTML;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>สรุปยอดทั้งหมด</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write(`
+                body { font-family: 'Arial', sans-serif; font-size: 14px; padding: 20px; }
+                h5 { font-size: 1.2em; margin-top: 15px; margin-bottom: 5px; }
+                p { margin-bottom: 5px; }
+                .specific-summary-table { width: 100%; border-collapse: collapse; font-size: 1.2em; max-width: 500px; margin: 0 auto; }
+                .specific-summary-table td { padding: 12px 0; border-bottom: 1px solid #eee; }
+                .specific-summary-table td:first-child { font-weight: bold; }
+                .specific-summary-table td:last-child { text-align: right; font-weight: bold; }
+                .specific-summary-table tr:last-child td { border-bottom: none; }
+                .specific-summary-table .negative-value { color: #dc3545; }
+                .specific-summary-table .positive-value { color: green; }
+                .specific-summary-table .total-row td { border-top: 2px solid #000; }
+                .summary-status-row td { padding-top: 20px; }
+                .summary-status-row .status-text { color: green; font-weight: bold; }
+                .summary-status-row .status-text.negative { color: #dc3545; }
+                #combinedSummaryTableContainer { width: 100%; }
+                #combinedSummaryTable { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                #combinedSummaryTable th, #combinedSummaryTable td { border: 1px solid #dee2e6; padding: 12px; text-align: right; white-space: nowrap; }
+                #combinedSummaryTable th { background-color: #f8f9fa; text-align: center; }
+                #combinedSummaryTable td:first-child { text-align: center; font-weight: bold; }
+                #combinedSummaryTable tfoot tr { font-weight: bold; background-color: #e9ecef; }
+                #combinedSummaryTable td.winning-numbers-cell { text-align: left; white-space: normal; font-size: 0.85em; }
+                .th-33-percent, .td-33-percent { color: purple; font-weight: bold; }
+                #combinedSummaryHeader { text-align: center; }
+                #combinedSummaryContent { display: flex; flex-direction: column; align-items: center; }
+            `);
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(`<h5>สรุปยอดทั้งหมด - ลูกค้า: ${currentUserName}</h5>`);
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+
+        function saveCombinedSummaryAsImage() {
+            const content = document.getElementById('combinedSummaryContent');
+            const originalWidth = content.style.width;
+            const originalHeight = content.style.height;
+
+            content.style.width = content.offsetWidth + 'px';
+            content.style.height = 'auto';
+
+            html2canvas(content, { 
+                scale: 2, 
+                useCORS: true,
+                logging: true 
+            }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `สรุปยอดตามเวลา_${currentUserName}.png`;
+                link.download = `สรุปยอดรวม_${currentUserName}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
+
+            content.style.width = originalWidth;
+            content.style.height = originalHeight;
         }
-        
+
         function arePermutations(str1, str2) {
             if (str1.length !== str2.length) {
                 return false;
