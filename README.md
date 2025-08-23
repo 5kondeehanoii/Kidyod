@@ -1,4 +1,4 @@
-ระบบคิดยอดพี่กวาง 30%
+คิดยอดพี่กวาง 30%
 
 <html lang="th">
 <head>
@@ -112,9 +112,6 @@
                 </div>
                 <div class="row g-2 align-items-center mb-3 input-amounts-group">
                     <div class="col-auto">
-                        <input type="text" id="billTime" class="form-control" placeholder="เช่น 15:30">
-                    </div>
-                    <div class="col-auto">
                         <input type="text" id="inputNumber" class="form-control" placeholder="ใส่เลข เช่น 13 31 23" oninput="displayInputNumbers()" onkeydown="handleInputNumberKeydown(event)" onblur="handleInputNumberBlur()" autocomplete="off">
                     </div>
                     <div class="col-auto">
@@ -174,11 +171,11 @@
                     </div>
                 </div>
                 <div id="timeBasedSummaryTableContainer">
-                    <h5 class="mt-4 mb-2">สรุปยอดรวมตามเวลา</h5>
+                    <h5 class="mt-4 mb-2">สรุปยอดรวมตามบิล</h5>
                     <table id="timeBasedSummaryTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>เวลา</th>
+                                <th>บิลที่</th>
                                 <th>ยอดรวมก่อนหัก %</th>
                                 <th>ยอดซื้อส่วนลด 30%</th>
                                 <th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>
@@ -228,11 +225,11 @@
                         </table>
                     </div>
                     <div id="modalSummaryTableContainer">
-                        <h5 class="mt-4 mb-2">สรุปยอดรวมตามเวลา</h5>
+                        <h5 class="mt-4 mb-2">สรุปยอดรวมตามบิล</h5>
                         <table id="modalTimeBasedSummaryTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>เวลา</th>
+                                    <th>บิลที่</th>
                                     <th>ยอดรวมก่อนหัก %</th>
                                     <th>ยอดซื้อส่วนลด 30%</th>
                                     <th class="text-center">ตัวเลขที่ถูก (จำนวนซื้อ)</th>
@@ -252,7 +249,6 @@
         </div>
     </div>
     <script>
-        const billTimeInput = document.getElementById('billTime');
         const inputNumberInput = document.getElementById('inputNumber');
         const upperAmountInput = document.getElementById('upperAmount');
         const lowerAmountInput = document.getElementById('lowerAmount');
@@ -358,9 +354,8 @@
                 alert('กรุณาใส่เลขและยอดเงินอย่างน้อยหนึ่งช่อง');
                 return;
             }
-            const billTime = billTimeInput.value || new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
             numbers.forEach(num => {
-                const newEntry = { time: billTime, number: num, upper: upperAmount, lower: lowerAmount, tods: todsAmount };
+                const newEntry = { number: num, upper: upperAmount, lower: lowerAmount, tods: todsAmount };
                 currentBillEntries.push(newEntry);
             });
             inputNumberInput.value = '';
@@ -410,15 +405,9 @@
         }
 
         function saveCurrentBillSummary() {
-            const selectedTime = document.getElementById('billTime').value;
-            if (!selectedTime) { 
-                alert('กรุณาเลือกเวลาก่อนบันทึก');
-                return;
-            }
             const total = calculateTotal(currentBillEntries);
-            const time = billTimeInput.value || new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
             allBills.push({
-                time: time,
+                time: `บิลที่ ${allBills.length + 1}`,
                 grandTotalBeforeDiscount: parseFloat(total.grandTotalBeforeDiscount),
                 singleDiscountTotalAmount: parseFloat(total.singleDiscountTotalAmount),
                 total: parseFloat(total.total),
@@ -438,18 +427,11 @@
             updateSummaryTable();
             alert('บันทึกยอดรวมแล้ว');
             updateCorrectNumbers();
-            billTimeInput.value = '';
             phoyInput.value = '';
         }
 
         function updateSummaryTable() {
             const summaryData = allBills;
-            summaryData.sort((a, b) => {
-                const timeA = a.time.split(':').map(Number);
-                const timeB = b.time.split(':').map(Number);
-                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
-                return timeA[1] - timeB[1];
-            });
             let tableBodyHtml = '';
             let grandTotalBeforeDiscount = 0;
             let singleDiscountTotalAmount = 0;
@@ -492,8 +474,12 @@
         function deleteSummary(index) {
             if (confirm('ยืนยันการลบรายการสรุปนี้?')) {
                 allBills.splice(index, 1);
+                allBills.forEach((bill, i) => {
+                    bill.time = `บิลที่ ${i + 1}`;
+                });
                 saveData();
                 updateSummaryTable();
+                updateModalSummaryTable();
             }
         }
 
@@ -642,7 +628,12 @@
                 let numbersPart = '';
                 let amountsPart = '';
                 let foundAmount = false;
+                
+                // ตรวจสอบโพยที่มีเครื่องหมาย ':'
                 const colonMatch = line.match(/^(.*?)\s*:\s*(.*?)$/);
+                // ตรวจสอบโพยที่มีเครื่องหมาย '='
+                const equalMatch = line.match(/^(.*?)\s*=\s*(.*?)$/);
+
                 if (colonMatch) {
                     numbersPart = colonMatch[1].trim();
                     const rawAmounts = colonMatch[2].trim();
@@ -653,36 +644,41 @@
                     if (upperMatch) upperPrice = parseInt(upperMatch[1], 10);
                     if (lowerMatch) lowerPrice = parseInt(lowerMatch[1], 10);
                     if (upperPrice > 0 || lowerPrice > 0) amountsPart = `${upperPrice}*${lowerPrice}`;
-                    else amountsPart = rawAmounts.replace(/[xX×+]+/g, '*').replace(/\s+/g, '');
+                    else amountsPart = rawAmounts.replace(/\s+/g, '');
+                    foundAmount = true;
+                } else if (equalMatch) {
+                    numbersPart = equalMatch[1].trim();
+                    const rawAmounts = equalMatch[2].trim();
+                    let upperPrice = 0;
+                    let lowerPrice = 0;
+                    const upperMatch = rawAmounts.match(/บน\s*(\d+)/);
+                    const lowerMatch = rawAmounts.match(/ล่าง\s*(\d+)/);
+                    if (upperMatch) upperPrice = parseInt(upperMatch[1], 10);
+                    if (lowerMatch) lowerPrice = parseInt(lowerMatch[1], 10);
+                    if (upperPrice > 0 || lowerPrice > 0) amountsPart = `${upperPrice}*${lowerPrice}`;
+                    else amountsPart = rawAmounts.replace(/\s+/g, '');
                     foundAmount = true;
                 } else {
-                    const combinedMatch = line.match(/^(.*?)\s*=\s*(.*?)$/);
-                    if (combinedMatch) {
-                        numbersPart = combinedMatch[1].trim();
-                        amountsPart = combinedMatch[2].trim().replace(/\s+/g, '');
+                    const slashAmountMatch = line.match(/^(.*?)\s*([/])\s*([\d*xX×+]+)$/);
+                    const standaloneAmountMatch = line.match(/^(.*?)\s+([\d*xX×+]+)$/);
+                    
+                    if (slashAmountMatch) {
+                        numbersPart = slashAmountMatch[1].trim();
+                        amountsPart = slashAmountMatch[3].trim().replace(/\s+/g, '');
+                        foundAmount = true;
+                    } else if (standaloneAmountMatch) {
+                        numbersPart = standaloneAmountMatch[1].trim();
+                        amountsPart = standaloneAmountMatch[2].trim();
                         foundAmount = true;
                     } else {
-                        const slashAmountMatch = line.match(/^(.*?)\s*([/])\s*([\d*xX×+]+)$/);
-                        if (slashAmountMatch) {
-                            numbersPart = slashAmountMatch[1].trim();
-                            amountsPart = slashAmountMatch[3].trim().replace(/\s+/g, '');
+                        if (lastAmount) {
+                            numbersPart = line.trim();
+                            amountsPart = lastAmount;
                             foundAmount = true;
-                        } else {
-                            const standaloneAmountMatch = line.match(/^(.*?)\s+([\d*xX×+]+)$/);
-                            if (standaloneAmountMatch) {
-                                numbersPart = standaloneAmountMatch[1].trim();
-                                amountsPart = standaloneAmountMatch[2].trim();
-                                foundAmount = true;
-                            } else {
-                                if (lastAmount) {
-                                    numbersPart = line.trim();
-                                    amountsPart = lastAmount;
-                                    foundAmount = true;
-                                }
-                            }
                         }
                     }
                 }
+                
                 if (foundAmount) lastAmount = amountsPart;
                 if (numbersPart) {
                     const numbers = numbersPart.replace(/[-/,.`()]+/g, ' ').trim().split(/\s+/).filter(n => n.length > 0);
@@ -706,7 +702,6 @@
                 alert('กรุณาวางข้อความที่ต้องการคำนวณ');
                 return;
             }
-            const billTime = billTimeInput.value || new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
             const lines = phoyText.split('\n').map(line => line.trim()).filter(line => line !== '');
             let totalProcessed = 0;
             lines.forEach(line => {
@@ -717,19 +712,34 @@
                 let upperAmount = 0;
                 let lowerAmount = 0;
                 let todsAmount = 0;
+                
                 const amounts = amountsPart.split('*').map(a => parseInt(a));
+                
+                // ตรวจสอบรูปแบบบน/ล่าง (บน x ล่าง y)
+                const upperMatch = amountsPart.match(/บน\s*(\d+)/);
+                const lowerMatch = amountsPart.match(/ล่าง\s*(\d+)/);
+                if (upperMatch) upperAmount = parseInt(upperMatch[1], 10);
+                if (lowerMatch) lowerAmount = parseInt(lowerMatch[1], 10);
+                
                 if (amounts.length === 1) {
                     if (numbersPart.split(/\s+/).filter(n => n.length === 3).length > 0) todsAmount = amounts[0];
                     else upperAmount = amounts[0];
                 } else if (amounts.length === 2) {
-                    if (numbersPart.split(/\s+/).filter(n => n.length === 3).length > 0) { upperAmount = amounts[0]; todsAmount = amounts[1]; }
-                    else { upperAmount = amounts[0]; lowerAmount = amounts[1]; }
+                    // หากมี บน-ล่าง จากการแปลงโพยมาก่อน
+                    if (upperAmount > 0 || lowerAmount > 0) {
+                        // ไม่ต้องทำอะไร
+                    } else if (numbersPart.split(/\s+/).filter(n => n.length === 3).length > 0) {
+                        upperAmount = amounts[0]; todsAmount = amounts[1];
+                    } else {
+                        upperAmount = amounts[0]; lowerAmount = amounts[1];
+                    }
                 } else if (amounts.length === 3) {
                     upperAmount = amounts[0]; lowerAmount = amounts[1]; todsAmount = amounts[2];
                 }
+                
                 const numbers = numbersPart.split(/[\s,/-]+/g).filter(n => n.length > 0);
                 numbers.forEach(num => {
-                    const newEntry = { time: billTime, number: num, upper: upperAmount, lower: lowerAmount, tods: todsAmount };
+                    const newEntry = { number: num, upper: upperAmount, lower: lowerAmount, tods: todsAmount };
                     currentBillEntries.push(newEntry);
                     totalProcessed++;
                 });
@@ -806,7 +816,7 @@
             const overallTotalPurchase = allBills.reduce((sum, bill) => sum + bill.total, 0);
             const overallDiscountedPurchase = allBills.reduce((sum, bill) => sum + bill.singleDiscountTotalAmount, 0);
             const overallWinningAmount = allBills.reduce((sum, bill) => sum + bill.winningAmount, 0);
-            const overallNetTotal = overallTotalPurchase - overallWinningAmount;
+            const overallNetTotal = overallDiscountedPurchase - overallWinningAmount;
 
             document.getElementById('overallTotalPurchase').textContent = Math.round(overallTotalPurchase);
             document.getElementById('overallDiscountedPurchase').textContent = Math.round(overallDiscountedPurchase);
